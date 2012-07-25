@@ -1,0 +1,5 @@
+include seqprint/test/data/CTCF_ENCODE_subset.bed
+include seqprint/test/data/regions.bed
+include seqprint/test/data/chr11_subset.fa
+include seqprint/test/data/ctcf.jaspar
+include README
