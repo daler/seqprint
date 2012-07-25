@@ -1,4 +1,4 @@
-seqprinter
+`seqprint`
 ----------
 
 Flexible and extensible pretty-printing of genomic sequences, given a bed file
@@ -8,11 +8,14 @@ Includes numbers with tick marks and sequence, and then applies any additional
 user-specified functions to generate additional "tracks".
 
 Originally written to help identify single bp positions within overlapping CTCF
-binding sites to choose for experimental follow-up but generalized for other uses.
+binding sites to choose for experimental follow-up, but then generalized for
+other uses.
+
+See the docstring for seqprint.seqprinter for more info on subclassing.
 
 Example usage (uses MotifPrinter, which is a subclass of BasePrinter)::
 
-    >>> from seqprint.SeqPrinter import MotifPrinter
+    >>> from seqprint import MotifPrinter
     >>> from seqprint.helpers import data_file
     >>> # get example data
     >>> regions = data_file('regions.bed')

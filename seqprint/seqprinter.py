@@ -7,16 +7,20 @@ accepts a single pybedtools.Interval as its only argument and returns either
 a string or an iterable of strings.
 
 The BasePrinter's `trackfuncs` list contains [self.header, self.numbers,
-self.seq].  Subclasses can append additional functions to `trackfuncs`.  If you
+self.seq].  These are called in order on each region when
+BasePrinter.printseq() is called.
+
+Subclasses can append additional functions to `trackfuncs`.  If you
 need to pass other data to the function, then either add the info to the region
 (say, in the `name` attribute) or make the function a method on the subclass so
-it can access the instance.
+it can access the instance data.
 
 The function can expect the `current_seq` attribute to be present, which
 represents the sequence for the region passed to the function.
 
 For example, here's a subclass that adds a "." wherever there is a "G" in the
-sequence::
+sequence.  It defines a new method that accesses self.current_seq, and returns
+a string; this new method is appended to the `trackfuncs` list::
 
     class DummyExample(BasePrinter):
         def __init__(self, regions, genome_fasta, letter='G'):

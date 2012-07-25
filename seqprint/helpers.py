@@ -6,6 +6,7 @@ import os
 def data_file(basename):
     return os.path.join(os.path.dirname(__file__), 'test', 'data', basename)
 
+
 def normalize(hit, region):
     """
     convert coords to be relative to `region`
@@ -42,6 +43,7 @@ def numbers(region):
             space -= 1
     return [''.join(n), ''.join(n2)]
 
+
 def pwm_from_jaspar(fn):
     """
     reads JASPAR download `fn` and returns an iterator of (`header`, `matrix`)
@@ -72,5 +74,3 @@ def pwm_from_jaspar(fn):
             break
         yield header, a
         minlen = min([len(i) for i in [a, c, g, t]])
-
-
