@@ -20,7 +20,7 @@ setup(
         packages=['seqprint',
                   'seqprint.test',
                   'seqprint.test.data'],
-        author="",
+        author="Ryan Dale",
         description='pretty-printing of genomic sequences',
         long_description=long_description,
         url="none",
