@@ -48,6 +48,7 @@ Usage::
 """
 
 import motility
+
 import itertools
 import pybedtools
 import helpers
@@ -178,15 +179,18 @@ class MotifPrinter(BasePrinter):
 
         self.trackfuncs.append(self.motifs)
         self.trackfuncs.append(self.annotations)
+        self.intervals = []
 
     def annotations(self, region):
         x = pybedtools.BedTool([region]).saveas()
         for symbol, annot in self._annotations.items():
             for hit in annot.intersect(x):
                 hit = helpers.normalize(hit, region)
-                match = ['.' * hit.start,
-                        symbol * len(hit),
-                        '.' * (len(region) - hit.stop)]
+                match = [
+                    '.' * hit.start,
+                    symbol * len(hit),
+                    '.' * (len(region) - hit.stop)
+                ]
                 yield ''.join(match)
 
     def motifs(self, region):
@@ -208,10 +212,11 @@ class MotifPrinter(BasePrinter):
                     name[p] = name[p].upper()
                 hit.name = ''.join(name)
 
-            match = ['.' * hit.start,
-                    hit.name,
-                    score,
-                    '.' * (len(region) - hit.stop - len(score)),
+            match = [
+                '.' * hit.start,
+                hit.name,
+                score,
+                '.' * (len(region) - hit.stop - len(score)),
             ]
             yield ''.join(match)
 
@@ -221,9 +226,11 @@ class MotifPrinter(BasePrinter):
             strand = "+"
         else:
             strand = "-"
-        return pybedtools.create_interval_from_list([
+        interval = pybedtools.create_interval_from_list([
             region.chrom, str(region.start + start),
             str(region.start + stop), seq, '0', strand])
+        self.intervals.append(interval)
+        return interval
 
     def motifs_in_region(self, region):
         seq = self.current_seq
