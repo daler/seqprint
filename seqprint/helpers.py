@@ -57,8 +57,9 @@ def pwm_from_jaspar(fn):
     Returns a motility.PWM instance for each matrix
     """
     def parse_matrix_line(line):
-        L = line.split()
-        L = L[2:-1]
+        for i in '[]ATCG':
+            line = line.replace(i, '')
+        L = line.strip().split()
         return [float(i) for i in L]
 
     header = None
