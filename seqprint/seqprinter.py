@@ -75,7 +75,7 @@ class BasePrinter(object):
         returns region name and genomic coords
         """
         return '%s %s:%s-%s' \
-                % (region.name, region.chrom, region.start, region.stop)
+            % (region.name, region.chrom, region.start, region.stop)
 
     def numbers(self, region):
         """
@@ -114,7 +114,8 @@ class BasePrinter(object):
 
 class MotifPrinter(BasePrinter):
     def __init__(self, regions, genome_fasta, jaspar_file=None,
-            jaspar_thresh=9999, annotations=None, motif_positions=None):
+                 jaspar_thresh=9999, annotations=None, motif_positions=None,
+                 method='motility'):
         """
         Adds motif tracks to BasePrinter, using motility and a file containing
         a JASPAR-format definition of a motif.
