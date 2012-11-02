@@ -253,6 +253,44 @@ class MotifPrinter(BasePrinter):
 
 
 
+
+class RegexPrinter(BasePrinter):
+    def __init__(self, regions, genome_fasta, regex_plus, regex_minus):
+        super(RegexPrinter, self).__init__(regions, genome_fasta)
+        self.regex_plus = regex_plus
+        self.regex_minus = regex_minus
+        self.trackfuncs.append(self.finder)
+        self.intervals = []
+
+    def finder(self, region):
+        s = ['.' for i in self.current_seq]
+        for hit in self.regex_plus.finditer(self.current_seq):
+            start, stop = hit.span()
+            s[start:stop] = hit.group()
+            strand = ' (+)'
+            s[stop:len(strand)] = strand
+            self.intervals.append(pybedtools.create_interval_from_list([
+                region.chrom,
+                str(region.start + start),
+                str(region.start + stop),
+                hit.group(),
+                '0',
+                '+']))
+        for hit in self.regex_minus.finditer(self.current_seq):
+            start, stop = hit.span()
+            s[start:stop] = Seq(hit.group()).reverse_complement()
+            strand = ' (-)'
+            s[stop:len(strand)] = strand
+            self.intervals.append(pybedtools.create_interval_from_list([
+                region.chrom,
+                str(region.start + start),
+                str(region.start + stop),
+                hit.group(),
+                '0',
+                '-']))
+        yield ''.join(s)
+
+
 class DummyExample(BasePrinter):
     def __init__(self, regions, genome_fasta, letter='G'):
         super(DummyExample, self).__init__(regions, genome_fasta)
