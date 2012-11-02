@@ -51,6 +51,8 @@ import motility
 import itertools
 import pybedtools
 import helpers
+from Bio.Seq import Seq
+from Bio import Motif
 
 
 class BasePrinter(object):
@@ -136,13 +138,33 @@ class MotifPrinter(BasePrinter):
         :param motif_positions:
             If this is a list of integer indexes, these positions will be
             converted to uppercase.
+        
+        :param method:
+            "motility" or "biopython"
         """
         super(MotifPrinter, self).__init__(regions=regions,
-                genome_fasta=genome_fasta)
+                                           genome_fasta=genome_fasta)
 
+        assert method in ['biopython', 'motility']
+        self.method = method
         pwm = list(helpers.pwm_from_jaspar(jaspar_file))
         assert len(pwm) == 1
         self.pwm = motility.PWM(pwm[0][1])
+
+        tmp = open('tmp', 'w')
+        for line in open(jaspar_file):
+            if line.startswith('>'):
+                continue
+            for i in '[]ATCG':
+                line = line.replace(i, '')
+            tmp.write(line)
+        tmp.close()
+        self.motif = Motif.read(open(tmp.name), 'jaspar-pfm')
+
+        if method == 'biopython':
+            sd = Motif.ScoreDistribution(self.motif)
+            jaspar_thresh = sd.threshold_patser()
+
         self.jaspar_thresh = jaspar_thresh
 
         if motif_positions is None:
@@ -205,8 +227,23 @@ class MotifPrinter(BasePrinter):
 
     def motifs_in_region(self, region):
         seq = self.current_seq
-        for hit in self.pwm.find(seq, threshold=self.jaspar_thresh):
-            yield helpers.normalize(self._hit_to_interval(hit, region), region)
+        if self.method == 'motility':
+            for hit in self.pwm.find(seq, threshold=self.jaspar_thresh):
+                start, stop, strand, seq = hit
+                yield helpers.normalize(self._hit_to_interval(hit, region), region)
+        if self.method == 'biopython':
+            seq_seq = Seq(seq)
+            motif_len = len(self.motif)
+            for pos, score in self.motif.search_pwm(seq_seq, threshold=self.jaspar_thresh):
+                strand = '+'
+                if pos < 0:
+                    strand = '-'
+                    pos = -pos
+                start = pos
+                stop = start + motif_len
+                hit = (start, stop, strand, seq[start:stop])
+                yield helpers.normalize(self._hit_to_interval(hit, region), region)
+
 
 
 class DummyExample(BasePrinter):
