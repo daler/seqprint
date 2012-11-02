@@ -1,6 +1,7 @@
 import numpy as np
 import pybedtools
 import os
+import copy
 
 
 def data_file(basename):
@@ -11,6 +12,7 @@ def normalize(hit, region):
     """
     convert coords to be relative to `region`
     """
+    hit = copy.copy(hit)
     hit.start -= region.start
     hit.stop -= region.start
     return hit
