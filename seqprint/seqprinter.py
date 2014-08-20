@@ -47,7 +47,6 @@ Usage::
 
 """
 
-import motility
 
 import itertools
 import pybedtools
@@ -139,13 +138,13 @@ class MotifPrinter(BasePrinter):
         :param motif_positions:
             If this is a list of integer indexes, these positions will be
             converted to uppercase.
-        
+
         :param method:
             "motility" or "biopython"
         """
         super(MotifPrinter, self).__init__(regions=regions,
                                            genome_fasta=genome_fasta)
-
+        import motility
         assert method in ['biopython', 'motility']
         self.method = method
         pwm = list(helpers.pwm_from_jaspar(jaspar_file))
@@ -314,8 +313,9 @@ if __name__ == "__main__":
     fasta = data_file('chr11_subset.fa')
     annotations = data_file('CTCF_ENCODE_subset.bed')
     jaspar = data_file('ctcf.jaspar')
-    p = BasePrinter(bedfile, fasta)
+    p0 = BasePrinter(bedfile, fasta)
     p = MotifPrinter(bedfile, fasta, jaspar_file=jaspar, jaspar_thresh=1.5,
-            annotations={"=": annotations},
-            motif_positions=[3, 4, 5, 8, 9, 10, 12, 13, 14])
+                     annotations={"=": annotations},
+                     motif_positions=[3, 4, 5, 8, 9, 10, 12, 13, 14])
     print p.printseq()
+    print p0.printseq()

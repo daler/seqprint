@@ -16,7 +16,7 @@ annotations
 setup(
         name="seqprint",
         version=version,
-        install_requires=['pybedtools', 'motility', 'numpy'],
+        install_requires=['pybedtools', 'biopython', 'numpy'],
         packages=['seqprint',
                   'seqprint.test',
                   'seqprint.test.data'],
